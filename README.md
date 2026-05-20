@@ -12,8 +12,9 @@ Write your script, then read it with a smooth, controlled scroll — and soon, a
 
 - **Script editor** powered by EditorJS (headings, paragraphs)
 - **Teleprompter view** with adjustable font size and scroll speed
+- **Voice-driven auto-scroll** — the teleprompter follows your reading automatically
 - Script persisted in localStorage — no account needed
-- Voice-driven auto-scroll *(coming soon)*
+
 
 ## Tech stack
 
@@ -21,8 +22,8 @@ Write your script, then read it with a smooth, controlled scroll — and soon, a
 - [Tailwind CSS](https://tailwindcss.com/)
 - [EditorJS](https://editorjs.io/)
 - [Zustand](https://zustand-demo.pmnd.rs/) (state management)
-- [Fuse.js](https://www.fusejs.io/) (fuzzy text matching — for voice sync)
-- Web Speech API *(coming soon)*
+- [Fuse.js](https://www.fusejs.io/) (fuzzy text matching for voice sync)
+- Web Speech API (Chrome only)
 
 ## Getting started
 
@@ -35,6 +36,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Browser support for voice auto-scroll
+
+Voice-driven auto-scroll relies on the Web Speech API, which is currently only supported on **Google Chrome** (desktop). Other browsers such as Firefox and Safari are not supported yet.
+
+| Language | Status |
+|----------|--------|
+| English (US) | ✅ Available |
+| French (FR) | 🔜 Coming soon |
+| Others | 🔜 Coming soon |
+
+
 ## Project structure
 - app/
     - editor/       → Script editor page
@@ -42,6 +54,8 @@ Open [http://localhost:3000](http://localhost:3000).
 - components/
     - Editor/       → EditorJS integration
     - Prompter/     → Teleprompter scroll & controls
+- hooks/
+    - useSpeechSync.ts  → Voice recognition & text alignment
 - store/
     - useScriptStore.ts  → Zustand store (shared script state)
 
@@ -49,7 +63,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - [x] Script editor
 - [x] Teleprompter with manual scroll speed
-- [ ] Voice-driven auto-scroll (Web Speech API)
+- [x] Voice-driven auto-scroll (English US, Chrome)
+- [ ] Multi-language voice support (FR, ES, DE...)
 
 ## License
 

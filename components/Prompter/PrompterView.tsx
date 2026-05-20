@@ -1,8 +1,9 @@
 'use client'
  
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import useScriptStore from '@/store/useScriptStore'
+import { useSpeechSync, SpeechState } from '@/hooks/useSpeechSync'
  
 type Block = {
   type: string
@@ -17,6 +18,8 @@ export default function PrompterView() {
   const lastTsRef = useRef<number | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
+  const [autoMode, setAutoMode] = useState(false)
+  const maxRatioRef = useRef(0)
  
   const totalScrollable = () => {
     if (!contentRef.current || !viewportRef.current) return 0
@@ -54,6 +57,8 @@ export default function PrompterView() {
   const handleReset = () => {
     setRunning(false)
     offsetRef.current = 0
+    maxRatioRef.current = 0
+    targetRatioRef.current = null
     applyOffset()
   }
  
@@ -87,6 +92,77 @@ export default function PrompterView() {
   }
  
   const blockList: Block[] = blocks?.blocks || []
+
+
+  const targetRatioRef = useRef<number | null>(null)
+
+  const handlePositionChange = useCallback((ratio: number) => {
+    targetRatioRef.current = ratio
+  }, [])
+
+  const { state: speechState, start: startSpeech, stop: stopSpeech } = useSpeechSync({
+    blocks: blockList,
+    onPositionChange: handlePositionChange,
+    getCurrentRatio: () => {
+      const total = totalScrollable()
+      return total > 0 ? offsetRef.current / total : 0
+    },
+  })
+
+  
+  useEffect(() => {
+    // Wait for DOM to re-render with new font size
+    requestAnimationFrame(() => {
+      const total = totalScrollable()
+      if (total === 0) return
+      const currentRatio = targetRatioRef.current ?? (offsetRef.current / total)
+      offsetRef.current = currentRatio * total
+      applyOffset()
+    })
+  }, [fontSize])
+
+  useEffect(() => {
+    if (!autoMode) return
+
+    let rafId: number
+
+    const loop = () => {
+      if (
+        targetRatioRef.current !== null &&
+        contentRef.current &&
+        viewportRef.current &&
+        speechState === 'speaking'
+      ) {
+        const total = totalScrollable()
+        const target = targetRatioRef.current * total
+
+        // Never scroll backwards
+        if (target > offsetRef.current) {
+          const diff = target - offsetRef.current
+          if (Math.abs(diff) > 1) {
+            offsetRef.current += diff * 0.05
+            applyOffset()
+          }
+        }
+      }
+
+      rafId = requestAnimationFrame(loop)
+    }
+
+    rafId = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(rafId)
+  }, [autoMode, speechState])
+
+  const toggleAutoMode = () => {
+    if (autoMode) {
+      stopSpeech()
+      setRunning(false)
+    } else {
+      setRunning(false)
+      startSpeech()
+    }
+    setAutoMode(m => !m)
+  }
  
   return (
     <div className="flex flex-col h-screen bg-black text-white">
@@ -117,10 +193,35 @@ export default function PrompterView() {
             Reset
           </button>
         </div>
+
+        <button
+          onClick={toggleAutoMode}
+          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer border ${
+            autoMode
+              ? 'bg-emerald-500 hover:bg-emerald-400 text-black border-transparent'
+              : 'border-zinc-700 hover:border-zinc-500 text-zinc-300'
+          }`}
+        >
+          {autoMode ? 'Auto ON' : 'Auto'}
+        </button>
+
+        {autoMode && (
+          <span className={`text-xs px-2 py-1 rounded-full ${
+            speechState === 'speaking' ? 'bg-emerald-500/20 text-emerald-400' :
+            speechState === 'paused'   ? 'bg-amber-500/20 text-amber-400' :
+            speechState === 'unsupported' ? 'bg-red-500/20 text-red-400' :
+            'bg-zinc-800 text-zinc-500'
+          }`}>
+            {speechState === 'speaking'     ? '● Listening'   :
+            speechState === 'paused'       ? '⏸ Paused'      :
+            speechState === 'unsupported'  ? '✕ Unsupported' :
+            '○ Starting...'}
+          </span>
+        )}
  
         {/* Right: sliders */}
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-zinc-400">
+          <div className={`flex items-center gap-2 text-sm text-zinc-400 ${autoMode ? 'hidden' : ''}`}>
             <label>Speed</label>
             <input type="range" min={10} max={200} step={5} value={speed}
               onChange={e => setSpeed(Number(e.target.value))}
