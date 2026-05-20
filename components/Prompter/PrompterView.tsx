@@ -1,6 +1,7 @@
 'use client'
  
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import useScriptStore from '@/store/useScriptStore'
  
 type Block = {
@@ -89,37 +90,52 @@ export default function PrompterView() {
  
   return (
     <div className="flex flex-col h-screen bg-black text-white">
+ 
       {/* Toolbar */}
-      <div className="flex items-center gap-4 px-6 py-3 bg-zinc-900 border-b border-zinc-800 flex-wrap">
-        <a href="/editor" className="text-zinc-400 hover:text-white text-sm transition-colors">
-          ← Editor
-        </a>
-        <button
-          onClick={() => setRunning(r => !r)}
-          className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-medium transition-colors cursor-pointer"
-        >
-          {running ? 'Pause' : 'Run'}
-        </button>
-        <button
-          onClick={handleReset}
-          className="px-4 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm transition-colors cursor-pointer"
-        >
-          Beginning
-        </button>
-        <div className="flex items-center gap-2 text-sm text-zinc-400">
-          <label>Speed</label>
-          <input type="range" min={10} max={200} step={5} value={speed}
-            onChange={e => setSpeed(Number(e.target.value))}
-            className="w-24 accent-amber-500" />
-          <span className="text-amber-400 w-8">{speed}</span>
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+ 
+        {/* Left: logo + back */}
+        <div className="flex items-center gap-3 mr-auto">
+          <Image src="/icon.svg" alt="Syncue" width={24} height={24} />
+          <a href="/editor" className="text-zinc-400 hover:text-white text-sm transition-colors">
+            ← Editor
+          </a>
         </div>
-        <div className="flex items-center gap-2 text-sm text-zinc-400">
-          <label>Size</label>
-          <input type="range" min={18} max={64} step={2} value={fontSize}
-            onChange={e => setFontSize(Number(e.target.value))}
-            className="w-24 accent-amber-500" />
-          <span className="text-amber-400 w-12">{fontSize}px</span>
+ 
+        {/* Center: play + reset */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRunning(r => !r)}
+            className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-medium transition-colors cursor-pointer"
+          >
+            {running ? 'Pause' : 'Run'}
+          </button>
+          <button
+            onClick={handleReset}
+            className="px-4 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm transition-colors cursor-pointer"
+          >
+            Reset
+          </button>
         </div>
+ 
+        {/* Right: sliders */}
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
+            <label>Speed</label>
+            <input type="range" min={10} max={200} step={5} value={speed}
+              onChange={e => setSpeed(Number(e.target.value))}
+              className="w-20 accent-amber-500" />
+            <span className="text-amber-400 w-8 tabular-nums">{speed}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
+            <label>Size</label>
+            <input type="range" min={18} max={64} step={2} value={fontSize}
+              onChange={e => setFontSize(Number(e.target.value))}
+              className="w-20 accent-amber-500" />
+            <span className="text-amber-400 w-12 tabular-nums">{fontSize}px</span>
+          </div>
+        </div>
+ 
       </div>
  
       {/* Viewport */}
@@ -127,7 +143,7 @@ export default function PrompterView() {
         <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent z-10 pointer-events-none" />
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-amber-500/20 z-10 pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
-        <div ref={contentRef} className="px-16 py-32">
+        <div ref={contentRef} className="px-6 md:px-16 py-32">
           {blockList.length > 0 ? blockList.map((block, i) => renderBlock(block, i)) : (
             <p className="text-center text-zinc-600 text-xl">
               No text — return to the editor to write one.
@@ -135,6 +151,7 @@ export default function PrompterView() {
           )}
         </div>
       </div>
+ 
     </div>
   )
 }
