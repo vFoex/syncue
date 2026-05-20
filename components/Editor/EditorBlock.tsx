@@ -18,7 +18,7 @@ export default function EditorBlock() {
       tools: {
         header: Header,
         paragraph: {
-          class: Paragraph,
+          class: Paragraph as any,
           inlineToolbar: true,
         },
       },
