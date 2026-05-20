@@ -178,31 +178,15 @@ export default function PrompterView() {
           </a>
         </div>
  
-        {/* Center: play + reset */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setRunning(r => !r)}
-            className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-medium transition-colors cursor-pointer"
-          >
-            {running ? 'Pause' : 'Run'}
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-4 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm transition-colors cursor-pointer"
-          >
-            Reset
-          </button>
-        </div>
-
         <button
           onClick={toggleAutoMode}
           className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer border ${
             autoMode
               ? 'bg-emerald-500 hover:bg-emerald-400 text-black border-transparent'
-              : 'border-zinc-700 hover:border-zinc-500 text-zinc-300'
+              : 'bg-amber-500 hover:bg-amber-400 text-black'
           }`}
         >
-          {autoMode ? 'Auto ON' : 'Auto'}
+          {autoMode ? 'Voice Auto ON' : 'Voice Auto'}
         </button>
 
         {autoMode && (
@@ -218,6 +202,28 @@ export default function PrompterView() {
             '○ Starting...'}
           </span>
         )}
+
+        |
+
+        {/* Center: play + reset */}
+        <div className="flex items-center gap-2">
+          {!autoMode && (
+            <button
+              onClick={() => setRunning(r => !r)}
+              className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-medium transition-colors cursor-pointer"
+            >
+              {running ? 'Pause' : 'Run'}
+            </button>
+          )}
+          <button
+            onClick={handleReset}
+            className="px-4 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm transition-colors cursor-pointer"
+          >
+            Reset
+          </button>
+        </div>
+
+        |
  
         {/* Right: sliders */}
         <div className="flex flex-wrap items-center gap-4">
