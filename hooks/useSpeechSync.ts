@@ -19,7 +19,7 @@ export function useSpeechSync({
   getCurrentRatio,
 }: UseSpeechSyncOptions) {
   const [state, setState] = useState<SpeechState>('idle')
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<any>(null)
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const activeRef = useRef(false)
 
@@ -71,7 +71,8 @@ export function useSpeechSync({
 
   const start = useCallback(() => {
     const SpeechRecognition =
-      window.SpeechRecognition || (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition
+      (window as any).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition: any }).webkitSpeechRecognition
 
     if (!SpeechRecognition) {
       setState('unsupported')
@@ -88,7 +89,7 @@ export function useSpeechSync({
       setState('speaking')
     }
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       setState('speaking')
       startSilenceTimer()
 
@@ -104,7 +105,7 @@ export function useSpeechSync({
     recognition.onspeechend = () => {
     }
 
-    recognition.onerror = (e) => {
+    recognition.onerror = (e: any) => {
       if (e.error !== 'no-speech') {
         setState('idle')
         activeRef.current = false
