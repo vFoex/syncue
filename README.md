@@ -1,5 +1,6 @@
 # Syncue
 > A simple smart teleprompter web application ready to use
+
 ![Version](https://img.shields.io/badge/version-0.1.0-red.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
