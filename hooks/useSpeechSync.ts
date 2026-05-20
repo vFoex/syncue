@@ -10,6 +10,7 @@ interface UseSpeechSyncOptions {
   onPositionChange: (ratio: number) => void
   silenceDelay?: number
   getCurrentRatio: () => number 
+  lang: string
 }
 
 export function useSpeechSync({
@@ -17,6 +18,7 @@ export function useSpeechSync({
   onPositionChange,
   silenceDelay = 5000,
   getCurrentRatio,
+  lang,
 }: UseSpeechSyncOptions) {
   const [state, setState] = useState<SpeechState>('idle')
   const recognitionRef = useRef<any>(null)
@@ -82,7 +84,7 @@ export function useSpeechSync({
     const recognition = new SpeechRecognition()
     recognition.continuous = true
     recognition.interimResults = true
-    recognition.lang = 'en-US' // change to your language
+    recognition.lang = lang
 
     recognition.onstart = () => {
       activeRef.current = true

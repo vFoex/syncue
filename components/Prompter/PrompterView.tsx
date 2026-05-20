@@ -11,7 +11,7 @@ type Block = {
 }
  
 export default function PrompterView() {
-  const { blocks, speed, fontSize, setSpeed, setFontSize } = useScriptStore()
+  const { blocks, speed, fontSize, setSpeed, setFontSize, voiceLang, setVoiceLang } = useScriptStore()
   const [running, setRunning] = useState(false)
   const offsetRef = useRef(0)
   const rafRef = useRef<number | null>(null)
@@ -20,6 +20,8 @@ export default function PrompterView() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const [autoMode, setAutoMode] = useState(false)
   const maxRatioRef = useRef(0)
+  const [showVoiceDialog, setShowVoiceDialog] = useState(false)
+
  
   const totalScrollable = () => {
     if (!contentRef.current || !viewportRef.current) return 0
@@ -107,6 +109,7 @@ export default function PrompterView() {
       const total = totalScrollable()
       return total > 0 ? offsetRef.current / total : 0
     },
+    lang: voiceLang,
   })
 
   
@@ -179,7 +182,7 @@ export default function PrompterView() {
         </div>
  
         <button
-          onClick={toggleAutoMode}
+          onClick={() => autoMode ? toggleAutoMode() : setShowVoiceDialog(true)}
           className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer border ${
             autoMode
               ? 'bg-emerald-500 hover:bg-emerald-400 text-black border-transparent'
@@ -258,7 +261,87 @@ export default function PrompterView() {
           )}
         </div>
       </div>
- 
+      {showVoiceDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+      
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-zinc-800">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <span className="text-emerald-400 text-base">🎙️</span>
+                </div>
+                <h2 className="text-white text-base font-semibold">Voice Auto-Scroll</h2>
+              </div>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Your teleprompter scrolls automatically as you speak — no manual speed control needed.
+              </p>
+            </div>
+      
+            {/* Body */}
+            <div className="px-6 py-4 space-y-4">
+      
+              {/* Requirements */}
+              <div className="space-y-2">
+                <p className="text-zinc-500 text-xs uppercase tracking-wider font-medium">Requirements</p>
+                <div className="space-y-2">
+                  {[
+                    { icon: '🌐', text: <><span className="text-white">Google Chrome</span> or <span className="text-white">Microsoft Edge</span> only — other browsers are not supported</> },
+                    { icon: '🎙️', text: <>Microphone permission required</> },
+                    { icon: '🔒', text: <><span className="text-white">No data leaves your device</span> — voice is processed entirely on your browser</> },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-3 bg-zinc-800/50 rounded-xl px-3 py-2.5">
+                      <span className="text-sm mt-0.5">{item.icon}</span>
+                      <p className="text-zinc-400 text-sm leading-snug">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+      
+              {/* Language selector */}
+              <div className="space-y-2">
+                <label className="text-zinc-500 text-xs uppercase tracking-wider font-medium block">
+                  Script language
+                </label>
+                <select
+                  value={voiceLang}
+                  onChange={e => setVoiceLang(e.target.value)}
+                  className="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 text-white text-sm rounded-xl px-3 py-2.5 cursor-pointer focus:outline-none focus:border-emerald-500 transition-colors"
+                >
+                  <option value="en-US">🇺🇸 English (US)</option>
+                  <option value="en-GB">🇬🇧 English (UK)</option>
+                  <option value="fr-FR">🇫🇷 French</option>
+                  <option value="es-ES">🇪🇸 Spanish</option>
+                  <option value="de-DE">🇩🇪 German</option>
+                  <option value="it-IT">🇮🇹 Italian</option>
+                  <option value="pt-BR">🇧🇷 Portuguese (BR)</option>
+                </select>
+              </div>
+      
+            </div>
+      
+            {/* Footer */}
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                onClick={() => setShowVoiceDialog(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white text-sm transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowVoiceDialog(false)
+                  toggleAutoMode()
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold transition-colors cursor-pointer"
+              >
+                Enable
+              </button>
+            </div>
+      
+          </div>
+        </div>
+      )}
     </div>
   )
 }
