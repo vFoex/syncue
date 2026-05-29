@@ -69,7 +69,7 @@ Voice-driven auto-scroll relies on the Web Speech API, which is currently only s
 - [x] Script editor
 - [x] Teleprompter with manual scroll speed
 - [x] Voice-driven auto-scroll (English US, Chrome)
-- [ ] Multi-language voice support (FR, ES, DE...)
+- [x] Multi-language voice support (FR, ES, DE...)
 
 ## License
 
