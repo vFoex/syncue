@@ -43,7 +43,12 @@ Voice-driven auto-scroll relies on the Web Speech API, which is currently only s
 | Language | Status |
 |----------|--------|
 | English (US) | ✅ Available |
-| French (FR) | 🔜 Coming soon |
+| English (UK) | ✅ Available |
+| French (FR) | ✅ Available |
+| Spanish (ES) | ✅ Available |
+| German (DE) | ✅ Available |
+| Italian (IT) | ✅ Available |
+| Portuguese (BR) | ✅ Available |
 | Others | 🔜 Coming soon |
 
 
